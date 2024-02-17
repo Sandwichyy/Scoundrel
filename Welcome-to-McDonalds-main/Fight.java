@@ -84,7 +84,7 @@ public class Fight {
 
                 Item item = p1.backpack.get(itemChoice);
 
-                p1.useItem(boss, item);
+                p1.useItem(boss, item.itemType);
             } else {
                 System.out.println("Invalid input loser");
             }

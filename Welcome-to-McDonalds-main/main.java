@@ -11,6 +11,7 @@ public class main {
     //                                 "|   <|\\                               |".toCharArray(),
     //                                 "|   / >                                |".toCharArray(),
     //                                 "========================================".toCharArray(),};
+    //
     public static void clear() {
         System.out.println();
         System.out.println("Press Enter to continue.");
