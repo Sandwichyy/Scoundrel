@@ -1,0 +1,40 @@
+Entity:
+- Name (String)
+- HP (int)
+- Defense (int)
+
+- Status Effects (multiple bools)
+    - BrainFreeze(paralyze)
+    - Confuse
+    - Poison
+
+Player (extends Entity):
+
+
+Boss (extends Entity) 
+
+
+
+Shop Consumables:
+1) French Fries: increase ATK and Defense (200 cal)
+2) Big Mac: Greatly increase ATK and Defense (600 cal)
+3) Vanilla Cone: Heal 9-13 HP (250 cal)
+4) Oreo McFlurry: Heal 20-25 HP, but 15% chance of applying Brain Freeze (paralyze) (700 cal)
+5) Large Sprite: Removes all status effects from self (500 cal)
+6) Pink Slime: Applies poison to boss
+?) Happy Meal: Random effect upon use (300)
+    - Heal 2-18 
+    - Take 2-10 damage
+    - increase attack by 1
+    -
+
+Shop
+Buy
+
+
+
+
+If player defense is increased: boss damage is decreased by 2 (maximum 4 times)
+if player taunts: player damage is increased by 2(maximum 4)
+
+
