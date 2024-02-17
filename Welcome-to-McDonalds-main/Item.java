@@ -1,4 +1,5 @@
 public class Item {
+    public static final Item[] allItems = {new Item};
     public int calories;
     public int cost;
     public ItemType itemType;

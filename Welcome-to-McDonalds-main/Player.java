@@ -46,6 +46,7 @@ public class Player extends Entity {
 
     public void useItem(Entity e, ItemType item) {
         checkCalories();
+        int happyValue;
 
         switch (item) {
             case frenchFries:
@@ -82,6 +83,7 @@ public class Player extends Entity {
                 e.giveStatus(StatusEffect.foodPoisoning);
                 break;
             case happyMeal:
+                happyValue = 
                 
 
                 
