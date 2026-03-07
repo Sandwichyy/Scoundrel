@@ -18,10 +18,17 @@ def loadCardSprites(filepath, columns, rows):
      
      return cards
 
+suits = ['Hearts', 'Clubs', 'Diamonds', 'Spades']
+enumerate(suits)
+ranks = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+enumerate(ranks)
+
+
 class VisualCard:
-     def __init__(self, suit, value, image, startX, startY):
+     def __init__(self, suit, dead, value, image, startX, startY):
           self.suit = suit
           self.rank = self.rank
+          self.dead = dead
 
-          suits = ['Hearts', 'Clubs', 'Diamonds', 'Spades']
-          ranks = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+          
+          
