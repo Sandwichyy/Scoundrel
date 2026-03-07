@@ -25,8 +25,8 @@ def Main_Menu():
     start_rect = pygame.Rect(1 * screen.get_width() / 10, 7 * screen.get_height() / 10, 210, 100)
     pygame.draw.rect(screen, (200,200,200), start_rect)
 
-    how_to_play_rect = pygame.Rect(4 * screen.get_width() / 10, 7 * screen.get_height() / 10, 210, 100)
-    pygame.draw.rect(screen, (200,200,200), how_to_play_rect)
+    tutorial_rect = pygame.Rect(4 * screen.get_width() / 10, 7 * screen.get_height() / 10, 210, 100)
+    pygame.draw.rect(screen, (200,200,200), tutorial_rect)
 
     quit_rect = pygame.Rect(7 * screen.get_width() / 10, 7 * screen.get_height() / 10, 210, 100)
     pygame.draw.rect(screen, (200,200,200), quit_rect)
@@ -40,12 +40,22 @@ def Main_Menu():
     screen.blit(start_text, (1 * screen.get_width() / 10, 7 * screen.get_height() / 10))
     screen.blit(tutorial_text, (4 * screen.get_width() / 10, 7 * screen.get_height() / 10))
     screen.blit(quit_text, (7 * screen.get_width() / 10, 7 * screen.get_height() / 10))
+
+    # button press stuff
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if start_rect.collidepoint(event.pos):
+                current_menu = 2
+            elif tutorial_rect.collidepoint(event.pos):
+                current_menu = 1
+            elif quit_rect.collidepoint(event.pos):
+                running = False
         
 def Death_Menu():
-     return
+     screen.fill((105,90,60))
 
-def Game():
-     return
+def Game_Session():
+     screen.fill((105,90,60))
 
 running = True
 while running:
@@ -60,9 +70,9 @@ while running:
 
     # flip() the display to put your work on screen
     elif current_menu == 1:
-        continue
+        Death_Menu()
     else :
-        continue
+        Game_Session()
         
     pygame.display.flip()
 
