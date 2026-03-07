@@ -12,22 +12,22 @@ for i in range(4):
      room[i] = -1
 
 def fillRoom():
-     index = random.randInt(0, 51)
-     if room[0] == -1:
-          #pull from card list
-     if room[0] == -1:
-          #pull from card list
-     if room[0] == -1:
-          #pull from card list
-     if room[0] == -1:   
-          #pull from card list
+     for i in range(4):
+          index = random.randInt(0, 51)
+          while (cards[index].suit == "Hearts" or cards[index].suit == "Hearts") and (cards[index].rank > 10):
+               index = random.randInt(0, 51)
 
-def useWeapon(slot: int) -> int:
-    if room[slot].suit != 'Diamonds':
-        return -1
+          room[i] = cards[index]
+          cards.remove(index)
+
 
 
 
 while health > 0:
-     #if skip pull 4 new cards
+     fillRoom()
+
+     #implement primary attack/heal/weapon loop
+
+     
+
 
