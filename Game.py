@@ -1,6 +1,7 @@
 import random
 
 cards = [] #fill w cards
+discarded = []
 health = 20
 
 #if weapon DNE -1 else dmg value
@@ -20,7 +21,9 @@ def fillRoom():
           room[i] = cards[index]
           cards.remove(index)
 
-
+def discard(slot):
+     discarded.append(room[slot])
+     room[slot] = -1
 
 
 while health > 0:
