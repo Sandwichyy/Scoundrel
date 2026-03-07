@@ -22,6 +22,12 @@ def fillRoom():
      if room[0] == -1:   
           #pull from card list
 
+def useWeapon(slot: int) -> int:
+    if room[slot].suit != 'Diamonds':
+        return -1
+
+
 
 while health > 0:
      #if skip pull 4 new cards
+
