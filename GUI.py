@@ -10,7 +10,6 @@ dt = 0
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
 healthbarOutline = pygame.rect(50, 50, 200, 40)
-health
 
 running = True
 while running:
