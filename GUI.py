@@ -8,7 +8,9 @@ main_menu = True
 dt = 0
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
-pygame.display.set_caption("Scoundrel")
+
+healthbarOutline = pygame.rect(50, 50, 200, 40)
+health
 
 running = True
 while running:
