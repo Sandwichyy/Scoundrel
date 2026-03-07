@@ -1,16 +1,16 @@
-
-# Example file showing a circle moving on screen
 import pygame
 
 # pygame setup
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
-running = True
+main_menu = True
 dt = 0
 
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+pygame.display.set_caption("Scoundrel")
 
+running = True
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
@@ -21,17 +21,10 @@ while running:
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("purple")
 
-    pygame.draw.circle(screen, "red", player_pos, 40)
-
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        player_pos.y -= 300 * dt
-    if keys[pygame.K_s]:
-        player_pos.y += 300 * dt
-    if keys[pygame.K_a]:
-        player_pos.x -= 300 * dt
-    if keys[pygame.K_d]:
-        player_pos.x += 300 * dt
+    if main_menu:
+        main_menu_font = pygame.font.SysFont("Serif", 40)
+        pygame.draw.rect(screen, (255, 255, 255), (200, 150, 100, 50))
+        start_text = main_menu_font.render(f"Start", True, (255,255,255))
 
     # flip() the display to put your work on screen
     pygame.display.flip()
