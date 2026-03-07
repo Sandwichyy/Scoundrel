@@ -4,13 +4,48 @@ import pygame
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
-main_menu = True
+current_menu = 0   # 0 = main, 1 = game over, 2 = in-game
 dt = 0
 
-player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+pygame.display.set_caption("Scoundrel: The Dungeon Crawler Card Game")
 
-healthbarOutline = pygame.rect(50, 50, 200, 40)
-health
+def Main_Menu():
+    screen.fill((105,90,60))
+    # title appearance
+    title_font = pygame.font.SysFont("Book Antiqua", 150)
+    title_text = title_font.render("Scoundrel", True, (255,255,255))
+
+    splash_font = pygame.font.SysFont("Book Antiqua", 40)
+    splash_text = splash_font.render("The Dungeon Crawler Card Game", True, (255, 255, 255))
+
+    screen.blit(title_text, (screen.get_width() / 4, 75))
+    screen.blit(splash_text, (screen.get_width() / 4 + 40, 250))
+
+    # button rectangles
+    start_rect = pygame.Rect(1 * screen.get_width() / 10, 7 * screen.get_height() / 10, 210, 100)
+    pygame.draw.rect(screen, (200,200,200), start_rect)
+
+    how_to_play_rect = pygame.Rect(4 * screen.get_width() / 10, 7 * screen.get_height() / 10, 210, 100)
+    pygame.draw.rect(screen, (200,200,200), how_to_play_rect)
+
+    quit_rect = pygame.Rect(7 * screen.get_width() / 10, 7 * screen.get_height() / 10, 210, 100)
+    pygame.draw.rect(screen, (200,200,200), quit_rect)
+    
+    # button text
+    button_font = pygame.font.SysFont("Book Antiqua", 50)
+    start_text = button_font.render("Start", True, (0,0,0))
+    tutorial_text = button_font.render("How to Play", True, (0,0,0))
+    quit_text = button_font.render("Quit", True, (0,0,0))
+
+    screen.blit(start_text, (1 * screen.get_width() / 10, 7 * screen.get_height() / 10))
+    screen.blit(tutorial_text, (4 * screen.get_width() / 10, 7 * screen.get_height() / 10))
+    screen.blit(quit_text, (7 * screen.get_width() / 10, 7 * screen.get_height() / 10))
+        
+def Death_Menu():
+     return
+
+def Game():
+     return
 
 running = True
 while running:
@@ -20,20 +55,19 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # fill the screen with a color to wipe away anything from last frame
-    screen.fill("purple")
-
-    if main_menu:
-        main_menu_font = pygame.font.SysFont("Serif", 40)
-        pygame.draw.rect(screen, (255, 255, 255), (200, 150, 100, 50))
-        start_text = main_menu_font.render(f"Start", True, (255,255,255))
+    if current_menu == 0:
+        Main_Menu()
 
     # flip() the display to put your work on screen
+    elif current_menu == 1:
+        continue
+    else :
+        continue
+        
     pygame.display.flip()
 
     # limits FPS to 60
-    # dt is delta time in seconds since last frame, used for framerate-
-    # independent physics.
+    # dt is delta time in seconds since last frame, used for framerate-independent physics.
     dt = clock.tick(60) / 1000
 
 pygame.quit()
