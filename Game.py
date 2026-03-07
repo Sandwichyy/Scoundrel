@@ -25,6 +25,7 @@ def discard(slot):
      discarded.append(room[slot])
      room[slot] = -1
 
+
 while health > 0:
      fillRoom()
 
