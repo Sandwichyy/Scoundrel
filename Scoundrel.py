@@ -305,8 +305,8 @@ def Game_Session():
                             weapon_slot.remove_card(old_weapon)
                             discard.append_card(old_weapon)
                             cards = slain_monsters.draw_cards(len(slain_monsters.cardset))
-                            for card in cards:
-                                discard.append_card(card)
+                            for monster in cards:
+                                discard.append_card(monster)
 
                     elif event.to_set == discard:
                         if card.color == Colors.CLUB or card.color == Colors.SPADE:
