@@ -441,6 +441,11 @@ def Credits():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                global current_menu
+                current_menu = 3
+                return
 
 running = True
 while running:
