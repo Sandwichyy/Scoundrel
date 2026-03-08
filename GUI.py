@@ -20,9 +20,6 @@ import Game
 pygame.init()
 screen = pygame.display.set_mode((1280, 800))
 clock = pygame.time.Clock()
-
-# testing purposes:
-#current_menu = 1
 current_menu = 0 # 0 = in-game, 1 = game over, 2 = game win
 dt = 0
 
@@ -197,7 +194,6 @@ manager.add_set(
     discard,
     (1070, 165),
     CardSetRights(
-        #draggable_in=lambda card: card.color != Colors.DIAMOND,
         draggable_in=True,
         draggable_out=False,
     ),
@@ -206,13 +202,17 @@ manager.add_set(
 pygame.display.set_caption("Scoundrel: The Dungeon Crawler Card Game")
 
 def Game_Session():
+    global player_health
+
+    if player_health == 0:
+        global current_menu
+        current_menu = 1
+
     # drawing health bar
     font = pygame.font.SysFont("Book Antiqua", 40)
     screen.blit(boardBg, (0, 0))
 
     # Draw current HP amount
-    global player_health
-
     pygame.draw.rect(screen, (70, 70, 70), (bar_x, bar_y, bar_width, bar_height))
     hp_ratio = player_health / max_health
     current_height = int(bar_height * hp_ratio)
@@ -320,8 +320,34 @@ def Game_Session():
     manager.draw(screen)
     pygame.display.flip()
 
+def new_game():
+    global player_health
+    global weapon_level
+    global ran_away
+    global current_menu
+
+    player_health = 20
+    weapon_level = -1
+    ran_away = False
+    current_menu = 0
+
 def Death_Menu():
-     screen.fill((105,90,60))
+    game_over_bg = pygame.image.load("game_over.png")
+    game_over_bg = pygame.transform.scale(game_over_bg, (1280, 800))
+
+    screen.blit(game_over_bg, (0,0))
+
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print(event.pos)
+            x,y = event.pos
+            if x >= 315 and x < 620 and y >= 425 and y < 510:
+                new_game()
+                return
+            elif x >= 660 and x < 965 and y >= 425 and y < 510:
+                sys.exit()
+        if event.type == pygame.QUIT:
+                sys.exit()         
 
 def Win_Menu():
     screen.fill((105, 90, 60))
@@ -334,11 +360,6 @@ running = True
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
-    # ts messes up the other pygame event loops. 
-    # Im not sure if that applies to main menu as well we may need to test
-    """for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False"""
 
     # flip() the display to put your work on screen
     if current_menu == 0:
