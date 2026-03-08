@@ -175,7 +175,7 @@ discard = Deck(
 
 manager.add_set(
     discard,
-    (900, 200),
+    (900, 150),
     CardSetRights(
         #draggable_in=lambda card: card.color != Colors.DIAMOND,
         draggable_in=True,
