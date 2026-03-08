@@ -246,7 +246,6 @@ def Game_Session():
                     sys.exit()
             case pygame_cards.events.CARD_MOVED:
                 card = event.card
-                print(card.number)
                 
                 if event.from_set == card_hand:
                     if len(card_hand.cardset) == 0:
