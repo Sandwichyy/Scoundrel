@@ -15,8 +15,6 @@ from pygame_cards.classics import CardSets, NumberCard, Level, Colors
 from pygame_cards.abstract import AbstractCard, AbstractCardGraphics
 import pygame_cards.events
 
-import Game
-
 # pygame setup
 pygame.init()
 screen = pygame.display.set_mode((1280, 800))
