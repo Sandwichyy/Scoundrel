@@ -17,7 +17,6 @@ import pygame_cards.events
 
 import Game
 
-
 # pygame setup
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
