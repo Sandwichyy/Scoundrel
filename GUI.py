@@ -12,7 +12,7 @@ from pygame_cards.deck import CardBackOwner, Deck
 
 from pygame_cards.set import CardsSet
 from pygame_cards.classics import CardSets, NumberCard, Level, Colors
-from pygame_cards.abstract import AbstractCard
+from pygame_cards.abstract import AbstractCard, AbstractCardGraphics
 import pygame_cards.events
 
 
@@ -51,6 +51,39 @@ deck = Deck(
     card_size=card_size,
     size=(card_size[0] + 52, card_size[1] + 52),
 )
+#deck.load_graphics(face_path=r'customCards/', back_file=r'customCards/back.png')
+
+#set up deck sprites
+backImg = pygame.image.load('customCards/back.png').convert_alpha()
+backImg = pygame.transform.smoothscale(backImg, (150, 225))
+
+class BalatroGraphics(AbstractCardGraphics):
+    def __init__(self, card, filepath, size=(150, 225)):
+        super().__init__(card, size)
+        self.filepath = filepath
+
+    @cached_property
+    def surface(self) -> pygame.Surface:
+        img = pygame.image.load(self.filepath).convert_alpha()
+        return pygame.transform.smoothscale(img, self.size)
+    
+    @cached_property
+    def back_surface(self) -> pygame.Surface:
+        return backImg
+    
+for card in deck.cardset:
+    rankStr = card.name.split(' of ')[0].lower()
+    rankStr = rankStr.replace('level.', '')
+    if rankStr == 'as':
+        rankStr = 'ace'
+
+    suitStr = str(card.color).lower().replace('colors.', '') + 's'
+    imgPath = f'customCards/{rankStr}_of_{suitStr}.png'
+
+    card.graphics = BalatroGraphics(card, filepath=imgPath)
+    card.back_image = backImg
+    if hasattr(card, '_graphics'):
+        card._graphics.back_surface = backImg
 
 manager.add_set(
     deck,
