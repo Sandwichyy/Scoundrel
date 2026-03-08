@@ -4,8 +4,7 @@ import sys
 import pygame
 
 from pygame_cards.hands import (
-    HorizontalPileGraphic,
-    VerticalPileGraphic,
+    HorizontalPileGraphic
 )
 from pygame_cards.manager import CardSetRights, CardsManager
 from pygame_cards.deck import CardBackOwner, Deck
@@ -21,10 +20,10 @@ import Game
 pygame.init()
 screen = pygame.display.set_mode((1280, 800))
 clock = pygame.time.Clock()
-current_menu = 0   # 0 = main, 1 = game over, 2 = in-game
+
 # testing purposes:
 #current_menu = 1
-current_menu = 2
+current_menu = 0 # 0 = in-game, 1 = game over, 2 = game win
 dt = 0
 
 #boardBg = pygame.image.load(r"C:\Users\primu\OneDrive\Desktop\Mcdonald trump\Scoundrel\Scoundrel\game_board.png")
@@ -38,7 +37,7 @@ card_size = (160, 225)
 pile_size = (250, 500)
 full_deck = CardSets.n52
 red_colors = [Colors.HEART, Colors.DIAMOND]
-face_levels = [Level.JACK, Level.QUEEN, Level.KING]
+face_levels = [Level.JACK, Level.QUEEN, Level.KING, Level.AS]
 
 # removes red face cards
 card_set = CardsSet([
@@ -46,6 +45,12 @@ card_set = CardsSet([
     if not (card.color in red_colors and card.number in face_levels)
 ])
 card_set.shuffle()
+
+# player stats
+max_health = 20
+player_health = 20
+weapon_level = -1
+ran_away = False
 
 # deck
 deck = Deck(
@@ -99,8 +104,6 @@ manager.add_set(
     ),
 )
 
-
-
 # main hand
 card_hand = HorizontalPileGraphic(
     CardsSet(),
@@ -123,6 +126,23 @@ manager.add_set(
         draggable_out=True,
     ),
 )
+
+# hp display
+heart = pygame.image.load("heart.png").convert_alpha()
+heart = pygame.transform.scale(heart, (60, 60))
+
+bar_x = 110
+bar_y = 500
+bar_width = 30
+bar_height = 200
+
+heart_x = 45
+heart_y = bar_y + bar_height + 0
+hp_ratio = player_health / max_health
+current_height = int(bar_height * hp_ratio)
+
+# Since bar is vertical, make it fill from bottom upward
+current_y = bar_y + (bar_height - current_height)
 
 # weapon
 weapon_slot = Deck(
@@ -160,7 +180,7 @@ manager.add_set(
     slain_monsters,
     (445, 488),
     CardSetRights(
-        draggable_in=lambda card: (card.color == Colors.CLUB or card.color == Colors.SPADE) and (not slain_monsters.cardset or card_value(slain_monsters.cardset[-1]) > card_value(card)),
+        draggable_in=lambda card: (card.color == Colors.CLUB or card.color == Colors.SPADE) and (not slain_monsters.cardset or card_value(slain_monsters.cardset[-1]) > card_value(card)) and weapon_level != -1,
         draggable_out=False,
     ),
 )
@@ -175,66 +195,60 @@ discard = Deck(
 
 manager.add_set(
     discard,
-    (1072, 162),
+    (1070, 165),
     CardSetRights(
         #draggable_in=lambda card: card.color != Colors.DIAMOND,
         draggable_in=True,
-        draggable_out=True,
+        draggable_out=False,
     ),
 )
 
 pygame.display.set_caption("Scoundrel: The Dungeon Crawler Card Game")
 
-def Main_Menu():
-    screen.fill((105,90,60))
-    # title appearance
-    title_font = pygame.font.SysFont("Book Antiqua", 150)
-    title_text = title_font.render("Scoundrel", True, (255,255,255))
-
-    splash_font = pygame.font.SysFont("Book Antiqua", 40)
-    splash_text = splash_font.render("The Dungeon Crawler Card Game", True, (255, 255, 255))
-
-    screen.blit(title_text, (screen.get_width() / 4, 75))
-    screen.blit(splash_text, (screen.get_width() / 4 + 40, 250))
-
-    # button rectangles
-    start_rect = pygame.Rect(1 * screen.get_width() / 10, 7 * screen.get_height() / 10, 210, 100)
-    pygame.draw.rect(screen, (200,200,200), start_rect)
-
-    tutorial_rect = pygame.Rect(4 * screen.get_width() / 10, 7 * screen.get_height() / 10, 210, 100)
-    pygame.draw.rect(screen, (200,200,200), tutorial_rect)
-
-    quit_rect = pygame.Rect(7 * screen.get_width() / 10, 7 * screen.get_height() / 10, 210, 100)
-    pygame.draw.rect(screen, (200,200,200), quit_rect)
-    
-    # button text
-    button_font = pygame.font.SysFont("Book Antiqua", 50)
-    start_text = button_font.render("Start", True, (0,0,0))
-    tutorial_text = button_font.render("How to Play", True, (0,0,0))
-    quit_text = button_font.render("Quit", True, (0,0,0))
-
-    screen.blit(start_text, (1 * screen.get_width() / 10, 7 * screen.get_height() / 10))
-    screen.blit(tutorial_text, (4 * screen.get_width() / 10, 7 * screen.get_height() / 10))
-    screen.blit(quit_text, (7 * screen.get_width() / 10, 7 * screen.get_height() / 10))
-
-    # button press stuff
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if start_rect.collidepoint(event.pos):
-                current_menu = 2
-            elif tutorial_rect.collidepoint(event.pos):
-                current_menu = 1
-            elif quit_rect.collidepoint(event.pos):
-                running = False
-        
-def Death_Menu():
-     screen.fill((105,90,60))
-
 def Game_Session():
+    # drawing health bar
+    font = pygame.font.SysFont("Book Antiqua", 40)
     screen.blit(boardBg, (0, 0))
 
+    # Draw current HP amount
+    global player_health
+
+    pygame.draw.rect(screen, (70, 70, 70), (bar_x, bar_y, bar_width, bar_height))
+    hp_ratio = player_health / max_health
+    current_height = int(bar_height * hp_ratio)
+
+    # Since bar is vertical, make it fill from bottom upward
+    current_y = bar_y + (bar_height - current_height)
+
+    if player_health >= 10:
+        pygame.draw.rect(
+            screen,
+            (20, 110, 20),  # pale pinkish-brown-ish color
+            (bar_x, current_y, bar_width, current_height)
+        )
+    elif player_health > 5:
+        pygame.draw.rect(
+            screen,
+            (180, 160, 50),  # pale pinkish-brown-ish color
+            (bar_x, current_y, bar_width, current_height)
+        )
+    else:
+        pygame.draw.rect(
+            screen,
+            (200, 50, 15),  # pale pinkish-brown-ish color
+            (bar_x, current_y, bar_width, current_height)
+        )
+
+    screen.blit(heart, (heart_x, heart_y))
+
+    hp_text = font.render(f"{player_health}/{max_health}", True, (135, 100, 50))
+    text_rect = hp_text.get_rect(midleft=(heart_x + 60 , heart_y + 30))
+    screen.blit(hp_text, text_rect)
+
+    # handling events
+    global weapon_level
+    global ran_away
+    
     for event in pygame.event.get():
         manager.process_events(event)
         match event.type:
@@ -256,16 +270,29 @@ def Game_Session():
 
                     elif len(card_hand.cardset) == 1:
                         cards = deck.draw_cards(min(3, len(deck.cardset)))
+                        
                         card_hand.extend_cards(cards)
+                        ran_away = False
 
                     if event.to_set == weapon_slot:
+                        weapon_level = card_value(card)
                         if len(weapon_slot.cardset) == 2:
-                            card = weapon_slot.cardset[0]
-                            weapon_slot.remove_card(card)
-                            discard.append_card(card)
+                            old_weapon = weapon_slot.cardset[0]
+                            weapon_slot.remove_card(old_weapon)
+                            discard.append_card(old_weapon)
                             cards = slain_monsters.draw_cards(len(slain_monsters.cardset))
                             for card in cards:
                                 discard.append_card(card)
+
+                    if event.to_set == discard:
+                        if card.color == Colors.CLUB or card.color == Colors.SPADE:
+                            player_health = player_health - card_value(card) if player_health - card_value(card) >= 0 else 0
+                        elif card.color == Colors.HEART:
+                            player_health = player_health + card_value(card) if player_health + card_value(card) <= 20 else 20
+
+                    if event.to_set == slain_monsters:
+                        damage_received = card_value(card) - weapon_level if card_value(card) - weapon_level >= 0 else 0
+                        player_health = player_health - damage_received if player_health - damage_received >= 0 else 0
 
             case pygame_cards.events.CARDSSET_CLICKED:
                 print("clicked", event.set, event.card)
@@ -278,22 +305,30 @@ def Game_Session():
                             card_hand_storage.append(card_hand.cardset.draw(-1))
                         cards = deck.draw_cards(min(4, len(deck.cardset)))
                         card_hand.extend_cards(cards)
-
-                    """elif len(card_hand.cardset) == 1:
-                        cards = deck.draw_cards(min(3, len(deck.cardset)))
-                        card_hand.extend_cards(cards)"""
-        
+                    
+                    elif len(card_hand.cardset) == 4 and len(deck.cardset) != 0 and ran_away == False:
+                        ran_away = True
+                        for fled_cards in card_hand.cardset:
+                            deck.append_card(fled_cards)
+                            
+                        card_hand.remove_all_cards()
+                        cards = deck.draw_cards(4)
+                        
+                        card_hand.extend_cards(cards)        
     
     manager.update(dt)
     manager.draw(screen)
     pygame.display.flip()
 
+def Death_Menu():
+     screen.fill((105,90,60))
+
+def Win_Menu():
+    screen.fill((105, 90, 60))
 
 # removes cards
 def end_game():
     manager.start_crazy(screen)
-
-
 
 running = True
 while running:
@@ -305,14 +340,13 @@ while running:
         if event.type == pygame.QUIT:
             running = False"""
 
-    if current_menu == 0:
-        Main_Menu()
     # flip() the display to put your work on screen
+    if current_menu == 0:
+        Game_Session()
     elif current_menu == 1:
         Death_Menu()
     else:
-        Game_Session()
-
+        Win_Menu()
 
     # limits FPS to 60
     # dt is delta time in seconds since last frame, used for framerate-independent physics.
