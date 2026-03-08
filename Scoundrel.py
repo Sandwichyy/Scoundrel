@@ -151,6 +151,7 @@ def new_game():
         card.back_image = backImg
         if hasattr(card, '_graphics'):
             card._graphics.back_surface = backImg
+        deck.card_back = backImg
 
     manager.add_set(
         deck,
