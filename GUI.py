@@ -22,11 +22,12 @@ screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 current_menu = 0   # 0 = main, 1 = game over, 2 = in-game
 # testing purposes:
-#current_menu = 0
+#current_menu = 1
 current_menu = 2
 dt = 0
 
-boardBg = pygame.image.load(r"C:\Users\primu\OneDrive\Desktop\Mcdonald trump\Scoundrel\Scoundrel\game_board.png")
+#boardBg = pygame.image.load(r"C:\Users\primu\OneDrive\Desktop\Mcdonald trump\Scoundrel\Scoundrel\game_board.png")
+boardBg = pygame.image.load("game_board.png")
 boardBg = pygame.transform.scale(boardBg, (1280, 720))
 
 # pygame_cards setup
@@ -54,7 +55,7 @@ deck = Deck(
 #deck.load_graphics(face_path=r'customCards/', back_file=r'customCards/back.png')
 
 #set up deck sprites
-backImg = pygame.image.load('customCards/back.png').convert_alpha()
+"""backImg = pygame.image.load('customCards/back.png').convert_alpha()
 backImg = pygame.transform.smoothscale(backImg, (150, 225))
 
 class BalatroGraphics(AbstractCardGraphics):
@@ -84,7 +85,7 @@ for card in deck.cardset:
     card.back_image = backImg
     if hasattr(card, '_graphics'):
         card._graphics.back_surface = backImg
-
+"""
 manager.add_set(
     deck,
     #(screen.get_size()[0] - deck.size[1] - deck.card_border_radius, 50),
@@ -139,8 +140,46 @@ manager.add_set(
 )
 
 # slain monsters
+def card_value(card):
+    if isinstance(card.number, int):
+        return card.number
+    else:
+        level_order = {Level.JACK: 11, Level.QUEEN: 12, Level.KING: 13, Level.AS: 14}
+        return level_order[card.number]
+
+slain_monsters = Deck(
+    CardsSet(),  # starts empty
+    card_size=card_size,
+    size=(card_size[0] + 300, card_size[1]),
+    visible=True
+)
+
+manager.add_set(
+    slain_monsters,
+    (500, 500),
+    CardSetRights(
+        draggable_in=lambda card: card.color == Colors.CLUB or card.color == Colors.SPADE and card_value(slain_monsters.cardset[-1]) > card_value(card),
+        draggable_out=True,
+    ),
+)
 
 # discard
+discard = Deck(
+    CardsSet(),  # starts empty
+    card_size=card_size,
+    size=(card_size[0], card_size[1]),
+    visible=True
+)
+
+manager.add_set(
+    discard,
+    (900, 200),
+    CardSetRights(
+        #draggable_in=lambda card: card.color != Colors.DIAMOND,
+        draggable_in=True,
+        draggable_out=True,
+    ),
+)
 
 pygame.display.set_caption("Scoundrel: The Dungeon Crawler Card Game")
 
@@ -202,6 +241,21 @@ def Game_Session():
             case pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     sys.exit()
+            case pygame_cards.events.CARD_MOVED:
+                card = event.card
+                
+                if event.from_set == card_hand:
+                    if len(card_hand.cardset) == 0:
+                        cards = deck.draw_cards(min(4, len(deck.cardset)))
+                        if card_hand.cardset:
+                            card_hand_storage.append(card_hand.cardset.draw(-1))
+                        for card in cards:
+                           card_hand.append_card(card)
+
+                    elif len(card_hand.cardset) == 1:
+                        cards = deck.draw_cards(min(3, len(deck.cardset)))
+                        card_hand.extend_cards(cards)
+
             case pygame_cards.events.CARDSSET_CLICKED:
                 print("clicked", event.set, event.card)
                 card = event.card
@@ -214,12 +268,9 @@ def Game_Session():
                         cards = deck.draw_cards(min(4, len(deck.cardset)))
                         card_hand.extend_cards(cards)
 
-                    elif len(card_hand.cardset) == 1:
-                        #if card_hand.cardset:
-                            # Put away the cards
-                            # card_hand_storage.append(card_hand.cardset.draw(-1))
+                    """elif len(card_hand.cardset) == 1:
                         cards = deck.draw_cards(min(3, len(deck.cardset)))
-                        card_hand.extend_cards(cards)
+                        card_hand.extend_cards(cards)"""
         
     
     manager.update(dt)
