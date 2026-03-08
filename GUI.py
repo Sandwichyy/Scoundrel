@@ -136,7 +136,7 @@ manager.add_set(
     weapon_slot,
     (267, 490),
     CardSetRights(
-        draggable_in=lambda card: card.color == Colors.DIAMOND and len(weapon_slot.cardset) < 1,
+        draggable_in=lambda card: card.color == Colors.DIAMOND,
         draggable_out=True,
     ),
 )
@@ -257,6 +257,15 @@ def Game_Session():
                     elif len(card_hand.cardset) == 1:
                         cards = deck.draw_cards(min(3, len(deck.cardset)))
                         card_hand.extend_cards(cards)
+
+                    if event.to_set == weapon_slot:
+                        if len(weapon_slot.cardset) == 2:
+                            card = weapon_slot.cardset[0]
+                            weapon_slot.remove_card(card)
+                            discard.append_card(card)
+                            cards = slain_monsters.draw_cards(len(slain_monsters.cardset))
+                            for card in cards:
+                                discard.append_card(card)
 
             case pygame_cards.events.CARDSSET_CLICKED:
                 print("clicked", event.set, event.card)
