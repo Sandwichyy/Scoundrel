@@ -11,7 +11,7 @@ lastAttacked = None
 weapon = None
 health = 20
 skip = False
-
+'''
 room = []
 for i in range(4):
      room[i] = -1
@@ -64,4 +64,4 @@ def attackUnarmed(slot: int) -> int:
 while health > 0 or cards.len == 0:
      fillRoom()
      #implement primary attack/heal/weapon loop
-     
+'''     
