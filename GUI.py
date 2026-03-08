@@ -1,11 +1,110 @@
+from dataclasses import dataclass, field
+from functools import cached_property
+import sys
 import pygame
+
+from pygame_cards.hands import (
+    HorizontalPileGraphic,
+    VerticalPileGraphic,
+)
+from pygame_cards.manager import CardSetRights, CardsManager
+from pygame_cards.deck import CardBackOwner, Deck
+
+from pygame_cards.set import CardsSet
+from pygame_cards.classics import CardSets, NumberCard, Level, Colors
+from pygame_cards.abstract import AbstractCard
+import pygame_cards.events
+
 
 # pygame setup
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 current_menu = 0   # 0 = main, 1 = game over, 2 = in-game
+# testing purposes:
+#current_menu = 1
+current_menu = 2
 dt = 0
+
+# pygame_cards setup
+size = width, height = screen.get_size()
+manager = CardsManager()
+card_size = (150, 225)
+pile_size = (250, 500)
+full_deck = CardSets.n52
+red_colors = [Colors.HEART, Colors.DIAMOND]
+face_levels = [Level.JACK, Level.QUEEN, Level.KING]
+
+# removes red face cards
+card_set = CardsSet([
+    card for card in full_deck
+    if not (card.color in red_colors and card.number in face_levels)
+])
+card_set.shuffle()
+
+# deck
+deck = Deck(
+    CardsSet(card_set),
+    card_size=card_size,
+    size=(card_size[0] + 52, card_size[1] + 52),
+)
+
+manager.add_set(
+    deck,
+    #(screen.get_size()[0] - deck.size[1] - deck.card_border_radius, 50),
+    (50, 200),
+    CardSetRights(
+        clickable=True,
+        draggable_in=False,
+        draggable_out=False,
+    ),
+)
+
+
+
+# main hand
+card_hand = HorizontalPileGraphic(
+    CardsSet(),
+    card_size=card_size,
+    size=(5 * card_size[0], card_size[1] + 52),
+    rel_offset=6,
+)
+card_hand_storage: list[CardsSet] = []
+
+manager.add_set(
+    card_hand,
+    (200, 200),
+    CardSetRights(
+        clickable=True,
+        draggable_in=False,
+        # Only the last card can be used
+        #draggable_out=lambda card: (
+        #   card == card_hand.cardset[-1] if card_hand.cardset else True
+        #),
+        draggable_out=True,
+    ),
+)
+
+# weapon
+weapon_slot = Deck(
+    CardsSet(),  # starts empty
+    card_size=card_size,
+    size=(card_size[0] + 52, card_size[1] + 52),
+    visible=True
+)
+
+manager.add_set(
+    weapon_slot,
+    (150, 500),
+    CardSetRights(
+        draggable_in=lambda card: card.color == Colors.DIAMOND and len(weapon_slot.cardset) < 1,
+        draggable_out=True,
+    ),
+)
+
+# slain monsters
+
+# discard
 
 pygame.display.set_caption("Scoundrel: The Dungeon Crawler Card Game")
 
@@ -43,7 +142,9 @@ def Main_Menu():
 
     # button press stuff
     for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.QUIT:
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             if start_rect.collidepoint(event.pos):
                 current_menu = 2
             elif tutorial_rect.collidepoint(event.pos):
@@ -55,29 +156,70 @@ def Death_Menu():
      screen.fill((105,90,60))
 
 def Game_Session():
-     screen.fill((105,90,60))
+    screen.fill((105,90,60))
+
+    for event in pygame.event.get():
+        manager.process_events(event)
+        match event.type:
+            case pygame.QUIT:
+                sys.exit()
+            case pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    sys.exit()
+            case pygame_cards.events.CARDSSET_CLICKED:
+                print("clicked", event.set, event.card)
+                card = event.card
+                set = event.set
+                if set == deck:
+                    if len(card_hand.cardset) == 0:
+                        if card_hand.cardset:
+                            # Put away the cards
+                            card_hand_storage.append(card_hand.cardset.draw(-1))
+                        cards = deck.draw_cards(min(4, len(deck.cardset)))
+                        card_hand.extend_cards(cards)
+
+                    elif len(card_hand.cardset) == 1:
+                        #if card_hand.cardset:
+                            # Put away the cards
+                            # card_hand_storage.append(card_hand.cardset.draw(-1))
+                        cards = deck.draw_cards(min(3, len(deck.cardset)))
+                        card_hand.extend_cards(cards)
+        
+    
+    manager.update(dt)
+    manager.draw(screen)
+    pygame.display.flip()
+
+
+# removes cards
+def end_game():
+    manager.start_crazy(screen)
+
+
 
 running = True
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
-    for event in pygame.event.get():
+    # ts messes up the other pygame event loops. 
+    # Im not sure if that applies to main menu as well we may need to test
+    """for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            running = False"""
 
     if current_menu == 0:
         Main_Menu()
-
     # flip() the display to put your work on screen
     elif current_menu == 1:
         Death_Menu()
-    else :
+    else:
         Game_Session()
-        
-    pygame.display.flip()
+
 
     # limits FPS to 60
     # dt is delta time in seconds since last frame, used for framerate-independent physics.
     dt = clock.tick(60) / 1000
+
+    pygame.display.flip()
 
 pygame.quit()
