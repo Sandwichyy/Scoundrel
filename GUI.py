@@ -105,14 +105,14 @@ manager.add_set(
 card_hand = HorizontalPileGraphic(
     CardsSet(),
     card_size=card_size,
-    size=(20 * card_size[0], card_size[1] + 52),
-    rel_offset= 1.22,
+    size=(5.2 * card_size[0], card_size[1] + 52),
+    rel_offset= 15,
 )
 card_hand_storage: list[CardsSet] = []
 
 manager.add_set(
     card_hand,
-    (270, 135),
+    (315, 135),
     CardSetRights(
         clickable=True,
         draggable_in=False,
@@ -134,7 +134,7 @@ weapon_slot = Deck(
 
 manager.add_set(
     weapon_slot,
-    (150, 500),
+    (200, 500),
     CardSetRights(
         draggable_in=lambda card: card.color == Colors.DIAMOND and len(weapon_slot.cardset) < 1,
         draggable_out=True,
@@ -152,7 +152,7 @@ def card_value(card):
 slain_monsters = Deck(
     CardsSet(),  # starts empty
     card_size=card_size,
-    size=(card_size[0] + 300, card_size[1]),
+    size=(card_size[0] + 100, card_size[1]),
     visible=True
 )
 
@@ -175,7 +175,7 @@ discard = Deck(
 
 manager.add_set(
     discard,
-    (900, 200),
+    (1072, 162),
     CardSetRights(
         #draggable_in=lambda card: card.color != Colors.DIAMOND,
         draggable_in=True,
