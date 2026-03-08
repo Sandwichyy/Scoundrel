@@ -28,7 +28,7 @@ class VisualCard:
      def __init__(self, suit, dead, value, image, startX, startY):
           self.suit = suit
           self.rank = self.rank
-          self.dead = deadgit 
+          self.dead = dead
 
           
           

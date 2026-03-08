@@ -19,7 +19,7 @@ import Game
 
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+screen = pygame.display.set_mode((1280, 800))
 clock = pygame.time.Clock()
 current_menu = 0   # 0 = main, 1 = game over, 2 = in-game
 # testing purposes:
@@ -29,12 +29,12 @@ dt = 0
 
 #boardBg = pygame.image.load(r"C:\Users\primu\OneDrive\Desktop\Mcdonald trump\Scoundrel\Scoundrel\game_board.png")
 boardBg = pygame.image.load("game_board.png")
-boardBg = pygame.transform.scale(boardBg, (1280, 720))
+boardBg = pygame.transform.scale(boardBg, (1280, 800))
 
 # pygame_cards setup
 size = width, height = screen.get_size()
 manager = CardsManager()
-card_size = (150, 225)
+card_size = (160, 225)
 pile_size = (250, 500)
 full_deck = CardSets.n52
 red_colors = [Colors.HEART, Colors.DIAMOND]
@@ -51,7 +51,7 @@ card_set.shuffle()
 deck = Deck(
     CardsSet(card_set),
     card_size=card_size,
-    size=(card_size[0] + 52, card_size[1] + 52),
+    size=(card_size[0], card_size[1] + 52),
 )
 #deck.load_graphics(face_path=r'customCards/', back_file=r'customCards/back.png')
 
@@ -91,7 +91,7 @@ for card in deck.cardset:
 manager.add_set(
     deck,
     #(screen.get_size()[0] - deck.size[1] - deck.card_border_radius, 50),
-    (50, 200),
+    (50, 120),
     CardSetRights(
         clickable=True,
         draggable_in=False,
@@ -105,14 +105,14 @@ manager.add_set(
 card_hand = HorizontalPileGraphic(
     CardsSet(),
     card_size=card_size,
-    size=(5 * card_size[0], card_size[1] + 52),
-    rel_offset=6,
+    size=(20 * card_size[0], card_size[1] + 52),
+    rel_offset= 1.22,
 )
 card_hand_storage: list[CardsSet] = []
 
 manager.add_set(
     card_hand,
-    (200, 200),
+    (270, 135),
     CardSetRights(
         clickable=True,
         draggable_in=False,
