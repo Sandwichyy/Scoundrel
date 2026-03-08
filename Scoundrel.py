@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from functools import cached_property
 import sys
+import webbrowser
 import pygame
 
 from pygame_cards.hands import (
@@ -20,7 +21,7 @@ import Game
 pygame.init()
 screen = pygame.display.set_mode((1280, 800))
 clock = pygame.time.Clock()
-current_menu = 0  # 0 = in-game, 1 = game over, 2 = game win
+current_menu = 3  # 0 = in-game, 1 = game over, 2 = game win, 3 = main menu, 4 = credits
 dt = 0
 
 boardBg = pygame.image.load("imageAssets/game_board.png")
@@ -31,6 +32,12 @@ game_over_bg = pygame.transform.scale(game_over_bg, (1280, 800))
 
 you_win_bg = pygame.image.load("imageAssets/you_win.png")
 you_win_bg = pygame.transform.scale(you_win_bg, (1280, 800))
+
+main_menu_bg = pygame.image.load("imageAssets/main_menu.png")
+main_menu_bg = pygame.transform.scale(main_menu_bg, (1280, 800))
+
+credits_bg = pygame.image.load("imageAssets/credits.png")
+credits_bg = pygame.transform.scale(credits_bg, (1280, 800))
 
 # image assets
 backImg = pygame.image.load('customCards/back.png').convert_alpha()
@@ -357,7 +364,6 @@ def Death_Menu():
 
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
-            print(event.pos)
             x, y = event.pos
 
             if x >= 315 and x < 620 and y >= 425 and y < 510:
@@ -374,7 +380,6 @@ def Win_Menu():
     screen.blit(you_win_bg, (0,0))
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
-            print(event.pos)
             x, y = event.pos
 
             if x >= 315 and x < 620 and y >= 425 and y < 510:
@@ -386,8 +391,57 @@ def Win_Menu():
         if event.type == pygame.QUIT:
             sys.exit()
 
-# first time initializing the game occurs here
-new_game()
+def Main_Menu():
+    screen.blit(main_menu_bg, (0,0))
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            print(event.pos)
+            x,y = event.pos
+
+            if x >= 375 and x < 895:
+                if y >= 190 and y < 265:
+                    new_game()
+                    return
+                elif y >= 300 and y < 375:
+                    url = "http://www.stfj.net/art/2011/Scoundrel.pdf"
+                    webbrowser.open(url)
+                elif y >= 410 and y < 485:
+                    global current_menu
+                    current_menu = 4
+                    return
+                elif y >= 520 and y < 595:
+                    sys.exit()
+
+def Credits():
+    screen.blit(credits_bg, (0,0))
+
+    font_text = pygame.font.SysFont("book antiqua", 36)
+
+    lines = [
+        "Original Game Creators:",
+        "Zach Gage and Kurt Bieg",
+        "",
+        "Project Team:",
+        "Obadiah Smolenski - Game Logic",
+        "Abdulmateen Shaikh - Sprites and Visuals",
+        "Samuel Xu - Control Scheme and Testing",
+        "Mohammed Sadaf - UI/UX and Debugging",
+        "",
+        "Special Thanks:",
+        "HackBU for helping make this project possible"
+    ]
+
+    y = 180
+    for line in lines:
+        text = font_text.render(line, True, (240, 220, 170))
+        screen.blit(text, (screen.get_width()//2 - text.get_width()//2, y))
+        y += 50
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
 
 running = True
 while running:
@@ -395,8 +449,12 @@ while running:
         Game_Session()
     elif current_menu == 1:
         Death_Menu()
-    else:
+    elif current_menu == 2:
         Win_Menu()
+    elif current_menu == 3:
+        Main_Menu()
+    else:
+        Credits()
 
     dt = clock.tick(60) / 1000
     pygame.display.flip()
