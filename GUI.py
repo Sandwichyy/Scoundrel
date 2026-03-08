@@ -22,9 +22,12 @@ screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 current_menu = 0   # 0 = main, 1 = game over, 2 = in-game
 # testing purposes:
-#current_menu = 1
+#current_menu = 0
 current_menu = 2
 dt = 0
+
+boardBg = pygame.image.load(r"C:\Users\primu\OneDrive\Desktop\Mcdonald trump\Scoundrel\Scoundrel\game_board.png")
+boardBg = pygame.transform.scale(boardBg, (1280, 720))
 
 # pygame_cards setup
 size = width, height = screen.get_size()
@@ -156,7 +159,7 @@ def Death_Menu():
      screen.fill((105,90,60))
 
 def Game_Session():
-    screen.fill((105,90,60))
+    screen.blit(boardBg, (0, 0))
 
     for event in pygame.event.get():
         manager.process_events(event)
