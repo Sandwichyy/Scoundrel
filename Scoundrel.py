@@ -213,7 +213,7 @@ def new_game():
             draggable_in=lambda card: (
                 (card.color == Colors.CLUB or card.color == Colors.SPADE)
                 and (not slain_monsters.cardset or card_value(slain_monsters.cardset[-1]) > card_value(card))
-                and weapon_level != -1
+                and weapon_level != -1 and len(weapon_slot.cardset) > 0
             ),
             draggable_out=False,
         ),
@@ -300,7 +300,7 @@ def Game_Session():
                 if event.from_set == card_hand:
                     if event.to_set == weapon_slot:
                         weapon_level = card_value(card)
-                        if len(weapon_slot.cardset) == 2:
+                        if len(weapon_slot.cardset) > 1:
                             old_weapon = weapon_slot.cardset[0]
                             weapon_slot.remove_card(old_weapon)
                             discard.append_card(old_weapon)
@@ -331,6 +331,11 @@ def Game_Session():
                         cards = deck.draw_cards(min(3, len(deck.cardset)))
                         card_hand.extend_cards(cards)
                         ran_away = False
+                # discarding weapon discards monsters too
+                elif event.from_set == weapon_slot and event.to_set == discard:
+                    cards = slain_monsters.draw_cards(len(slain_monsters.cardset))
+                    for monster in cards:
+                        discard.append_card(monster)
 
             case pygame_cards.events.CARDSSET_CLICKED:
                 print("clicked", event.set, event.card)
