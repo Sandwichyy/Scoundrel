@@ -319,7 +319,8 @@ def Game_Session():
                         player_health = player_health - damage_received if player_health - damage_received >= 0 else 0
 
                     if len(card_hand.cardset) == 0:
-                        if (len(deck.cardset) == 0):
+                        # added player health check
+                        if len(deck.cardset) == 0 and player_health > 0:
                             current_menu = 2
                         cards = deck.draw_cards(min(4, len(deck.cardset)))
                         if card_hand.cardset:
@@ -331,7 +332,7 @@ def Game_Session():
                         cards = deck.draw_cards(min(3, len(deck.cardset)))
                         card_hand.extend_cards(cards)
                         ran_away = False
-                # discarding weapon discards monsters too
+
                 elif event.from_set == weapon_slot and event.to_set == discard:
                     cards = slain_monsters.draw_cards(len(slain_monsters.cardset))
                     for monster in cards:
